@@ -132,10 +132,12 @@
   .tab.active svg{color:var(--forest);}
 
   .btn{
-    flex:1;height:52px;border-radius:14px;border:none;
+    flex:1 1 0;min-width:0;
+    height:52px;border-radius:14px;border:none;
     font-family:'Inter';font-size:14.5px;font-weight:600;
     display:flex;align-items:center;justify-content:center;gap:8px;
     cursor:pointer;transition:transform .15s ease;
+    white-space:nowrap;overflow:hidden;
   }
   .btn:active{transform:scale(.97);}
   .btn-light{background:var(--sand);color:var(--ink);}
@@ -1068,7 +1070,7 @@
               <span class="ob-input-label">WhatsApp number</span>
               <div class="ob-phone-wrap">
                 <div class="ob-prefix">+91</div>
-                <input class="ob-input" id="user-phone-input" type="tel" maxlength="10" inputmode="numeric" placeholder="10 digit number" autocomplete="tel-national"/>
+                <input class="ob-input" id="user-phone-input" type="tel" maxlength="10" inputmode="numeric" placeholder="10 digit number" autocomplete="off" name="ph-no-autofill" data-form-type="other"/>
               </div>
               <span class="ob-helper">No spam. Just your daily nudges and reminders.</span>
             </div>
@@ -1253,7 +1255,6 @@
 
           <div class="detail-card">
             <h1 class="recipe-title" id="d-title">—</h1>
-            <div class="recipe-date" id="d-date-line">Wed Feb 11</div>
 
             <!-- SB session card — primary trust anchor under the title -->
             <div class="script-card" id="d-script" onclick="this.classList.toggle('playing')">
@@ -1388,7 +1389,7 @@
                 Share with family
               </button>
               <button class="btn btn-primary" onclick="goTo('home')">
-                Continue tomorrow
+                Done
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
               </button>
             </div>
@@ -1493,11 +1494,11 @@
 // Verified-working Unsplash IDs (consolidated to images that load reliably)
 const IMG = {
   // Teas (6)
-  fennelCumin:        'https://images.unsplash.com/photo-1542444459-db63c2c0c5e0?w=900&q=85',
+  fennelCumin:        'https://images.unsplash.com/photo-1571423440830-6b9bca8f5c2e?w=900&q=85',
   fennelCinnamon:     'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=900&q=85',
   tulsiGinger:        'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=900&q=85',
-  cardamom:           'https://images.unsplash.com/photo-1517256673644-36ad11246d21?w=900&q=85',
-  ccf:                'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=900&q=85',
+  cardamom:           'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=900&q=85',
+  ccf:                'https://images.unsplash.com/photo-1571423440830-6b9bca8f5c2e?w=900&q=85',
   cuminGingerLemon:   'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=900&q=85',
   // Salads (12)
   yogurtCucumber:     'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=900&q=85',
@@ -2299,8 +2300,6 @@ function openRecipe(id) {
   document.getElementById('d-title').textContent = r.name;
   document.getElementById('d-context').textContent = `Day ${r.day} of Week ${r.week} · ${r.theme}`;
   document.getElementById('d-context').classList.remove('family');
-  const dl = document.getElementById('d-date-line');
-  if (dl) dl.textContent = `${r.dayName} ${r.date} · Week ${r.week} · ${r.weekTitle}`;
   document.getElementById('d-duration').textContent = '▶ ' + r.classScriptDuration;
   document.getElementById('d-time').textContent = r.time + ' min';
   document.getElementById('d-difficulty').textContent = r.difficulty;
