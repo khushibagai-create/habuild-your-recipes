@@ -1256,17 +1256,6 @@
           <div class="detail-card">
             <h1 class="recipe-title" id="d-title">—</h1>
 
-            <!-- SB session card — primary trust anchor under the title -->
-            <div class="script-card" id="d-script" onclick="this.classList.toggle('playing')">
-              <div class="script-avatar">SB</div>
-              <div class="script-info">
-                <div class="label">Today's session</div>
-                <div class="title">Listen to SB ji's 1-min teaching</div>
-                <div class="duration"><span id="d-duration">▶ 1:14</span> · Hindi &amp; English</div>
-              </div>
-              <div class="script-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-            </div>
-
             <div class="stat-row">
               <div class="stat-cell"><span class="stat-label">Time</span><span class="stat-val" id="d-time">—</span></div>
               <div class="stat-cell"><span class="stat-label">Difficulty</span><span class="stat-val" id="d-difficulty">—</span></div>
@@ -2300,7 +2289,6 @@ function openRecipe(id) {
   document.getElementById('d-title').textContent = r.name;
   document.getElementById('d-context').textContent = `Day ${r.day} of Week ${r.week} · ${r.theme}`;
   document.getElementById('d-context').classList.remove('family');
-  document.getElementById('d-duration').textContent = '▶ ' + r.classScriptDuration;
   document.getElementById('d-time').textContent = r.time + ' min';
   document.getElementById('d-difficulty').textContent = r.difficulty;
   document.getElementById('d-serves').textContent = r.serves;
@@ -2319,9 +2307,6 @@ function openRecipe(id) {
 
   // CTA back to "Cooked it"
   document.getElementById('cooked-cta-text').textContent = 'Cooked it';
-
-  // Reset script card play state
-  document.getElementById('d-script').classList.remove('playing');
 
   // Pre-set reflection
   prepareReflection(r);
@@ -2415,7 +2400,7 @@ function setYield(mult) {
   if (mult >= 4) {
     familyTip.textContent = '"' + r.familyTip + '"';
     familyTip.classList.add('show');
-    ctaText.textContent = 'Cooked it for the family';
+    ctaText.textContent = 'Cooked for family';
     heroContext.textContent = `Saved for family of ${mult}`;
     heroContext.classList.add('family');
     yieldHint.textContent = `Quantities updated for ${mult} servings`;
