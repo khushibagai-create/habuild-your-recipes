@@ -1465,7 +1465,7 @@
             </div>
 
             <div class="reflect-actions">
-              <button class="btn btn-light" onclick="showToast('Status share preview')">
+              <button class="btn btn-light" onclick="shareRecipe()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
                 Share with family
               </button>
@@ -1531,7 +1531,7 @@
       </div>
 
       <div class="bottom-cta" id="bottom-cta">
-        <button class="btn btn-light" onclick="showToast('Status share preview')">
+        <button class="btn btn-light" onclick="shareRecipe()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
           Share
         </button>
@@ -2753,6 +2753,45 @@ function showToast(msg) {
   t.classList.add('show');
   clearTimeout(window._tt);
   window._tt = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// =====================================================================
+// SHARE — uses native Web Share API on mobile; clipboard fallback on desktop
+// =====================================================================
+async function shareRecipe() {
+  const r = RECIPES[state.currentRecipeId];
+  if (!r) return;
+
+  const appUrl = 'https://khushibagai-create.github.io/habuild-your-recipes/';
+  const text = `I made ${r.name} today — Day ${r.day} of Habuild's February ${r.weekTitle} micro-habit. ${r.benefits[0]}.`;
+  const shareData = {
+    title: `${r.name} — Habuild`,
+    text: text,
+    url: appUrl
+  };
+
+  // Native share sheet on mobile (WhatsApp, SMS, Instagram, etc.)
+  if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+    try {
+      await navigator.share(shareData);
+      showToast('Thanks for sharing');
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; // user cancelled silently
+      // fall through to clipboard
+    }
+  }
+
+  // Desktop fallback: copy a clean message to clipboard
+  const fallback = `${text}\n${appUrl}`;
+  try {
+    await navigator.clipboard.writeText(fallback);
+    showToast('Copied to clipboard — paste anywhere');
+  } catch (e) {
+    // Last-ditch fallback: open WhatsApp web with prefilled message
+    const wa = `https://wa.me/?text=${encodeURIComponent(fallback)}`;
+    window.open(wa, '_blank');
+  }
 }
 
 function goBackFromDetail() {
