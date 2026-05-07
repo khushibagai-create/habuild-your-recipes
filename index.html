@@ -2275,7 +2275,18 @@ const CALENDAR = [
 const STORAGE_KEY = 'habuild_user_v1';
 
 function loadUser(){
+  // Allow demo reset via URL: ?reset=1 or ?fresh=1 clears stored user
   try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('reset') || params.has('fresh')) {
+      localStorage.removeItem(STORAGE_KEY);
+      // Strip the param from URL so refreshes don't keep resetting
+      const url = new URL(window.location);
+      url.searchParams.delete('reset');
+      url.searchParams.delete('fresh');
+      window.history.replaceState({}, '', url);
+      return { name: '', phone: '' };
+    }
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { name: '', phone: '' };
     const parsed = JSON.parse(raw);
