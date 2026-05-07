@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="theme-color" content="#2D5016"/>
+<meta name="theme-color" content="#F5F0E8"/>
 <title>Habuild — Your Recipes (v4, Feb 2026)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1001,7 +1001,7 @@
     margin:0;
     gap:0;
     align-items:stretch;
-    background:#0a0d07;
+    background:var(--cream);
   }
   .stage{
     width:100%;
@@ -1036,7 +1036,7 @@
   /* Tablet/desktop — show as centered app card with breathing room */
   @media (min-width:480px){
     body{
-      background:linear-gradient(135deg, #1a2410 0%, #0a0d07 100%);
+      background:var(--cream);
       padding:24px 0 !important;
       align-items:center;
     }
@@ -1046,7 +1046,8 @@
       max-width:430px;
       border-radius:32px;
       overflow:hidden;
-      box-shadow:0 24px 60px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.2);
+      border:1px solid rgba(45,80,22,0.06);
+      box-shadow:0 12px 40px rgba(45,80,22,0.08), 0 4px 12px rgba(45,80,22,0.05);
     }
     .phone{
       height:calc(100vh - 48px);
@@ -1523,17 +1524,9 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
           Home
         </div>
-        <div class="tab" id="tab-sessions">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-          Sessions
-        </div>
         <div class="tab" id="tab-recipes" onclick="goTo('recipes')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
           Recipes
-        </div>
-        <div class="tab" id="tab-you">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>
-          You
         </div>
       </div>
 
