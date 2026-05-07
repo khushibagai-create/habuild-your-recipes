@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="theme-color" content="#2D5016"/>
 <title>Habuild — Your Recipes (v4, Feb 2026)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -989,6 +992,94 @@
     transition:all .2s ease;white-space:nowrap;
   }
   .nav button.active{background:var(--forest);color:#fff;}
+
+  /* =====================================================================
+     PRODUCTION MODE — strip prototype chrome, make a real responsive web app
+     ===================================================================== */
+  body{
+    padding:0 !important;
+    margin:0;
+    gap:0;
+    align-items:stretch;
+    background:#0a0d07;
+  }
+  .stage{
+    width:100%;
+    max-width:none;
+    gap:0;
+    align-items:stretch;
+    min-height:100vh;
+  }
+  /* Hide all prototype chrome */
+  .meta, .notch, .status-bar, .nav { display:none !important; }
+
+  /* Phone wrapper becomes the responsive app frame */
+  .phone-wrap{
+    position:relative;
+    width:100%;
+    max-width:430px;
+    margin:0 auto;
+    flex:1;
+  }
+  .phone{
+    width:100%;
+    height:100vh;
+    height:100dvh;
+    background:var(--white);
+    border:none !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* Tablet/desktop — show as centered app card with breathing room */
+  @media (min-width:480px){
+    body{
+      background:linear-gradient(135deg, #1a2410 0%, #0a0d07 100%);
+      padding:24px 0 !important;
+      align-items:center;
+    }
+    .stage{min-height:auto;align-items:center;}
+    .phone-wrap{
+      flex:none;
+      max-width:430px;
+      border-radius:32px;
+      overflow:hidden;
+      box-shadow:0 24px 60px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.2);
+    }
+    .phone{
+      height:calc(100vh - 48px);
+      max-height:880px;
+      min-height:720px;
+      border-radius:32px !important;
+    }
+  }
+
+  /* Adjust internal top padding (was set for simulated status bar) */
+  .topbar{
+    padding-top:max(16px, env(safe-area-inset-top));
+  }
+  .onboard{
+    padding-top:max(40px, calc(env(safe-area-inset-top) + 24px));
+    padding-bottom:max(32px, env(safe-area-inset-bottom));
+  }
+  .reflect{
+    padding-top:max(20px, env(safe-area-inset-top));
+    padding-bottom:max(30px, env(safe-area-inset-bottom));
+  }
+  .hero-top{
+    top:max(18px, env(safe-area-inset-top));
+  }
+
+  /* Tab bar / bottom CTA — respect iPhone home indicator */
+  .tab-bar{
+    height:calc(var(--tab-h) + env(safe-area-inset-bottom));
+    padding:0 18px max(18px, env(safe-area-inset-bottom));
+  }
+  .bottom-cta{
+    padding-bottom:max(20px, env(safe-area-inset-bottom));
+  }
 </style>
 </head>
 <body>
@@ -2186,10 +2277,27 @@ const CALENDAR = [
 ];
 
 // =====================================================================
-// STATE
+// STATE + PERSISTENCE
 // =====================================================================
+const STORAGE_KEY = 'habuild_user_v1';
+
+function loadUser(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { name: '', phone: '' };
+    const parsed = JSON.parse(raw);
+    return { name: parsed.name || '', phone: parsed.phone || '' };
+  } catch(e){ return { name: '', phone: '' }; }
+}
+
+function saveUser(){
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
+  } catch(e){}
+}
+
 const state = {
-  user: { name: '', phone: '' },
+  user: loadUser(),
   currentRecipeId: 'tulsi-ginger',
   yieldMult: 1
 };
@@ -2263,6 +2371,7 @@ function submitName() {
   const v = (nameInput.value || '').trim();
   if (v.length < 2) return;
   state.user.name = v;
+  saveUser();
   document.getElementById('ob-greet-eyebrow').textContent = 'Welcome, ' + v;
   document.getElementById('hub-name').textContent = v;
   goTo('onboard-phone');
@@ -2271,7 +2380,15 @@ function submitName() {
 function submitPhone() {
   if (phoneInput.value.length !== 10) return;
   state.user.phone = '+91 ' + phoneInput.value;
+  saveUser();
   goTo('home');
+}
+
+// Allow user to reset (e.g. logged out or testing)
+function resetUser(){
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+  state.user = { name: '', phone: '' };
+  goTo('onboard-name');
 }
 
 // =====================================================================
@@ -2680,7 +2797,19 @@ renderCalendar();
 renderThisWeekRow();
 // Pre-fill detail with today's recipe so direct nav to detail still works
 openRecipe('tulsi-ginger');
-goTo('onboard-name');
+
+// Returning user — skip onboarding, go straight to Home with greeting populated
+if (state.user.name && state.user.phone) {
+  document.getElementById('hub-name').textContent = state.user.name;
+  goTo('home');
+} else if (state.user.name) {
+  // Has name but no phone — pick up from where they left off
+  document.getElementById('ob-greet-eyebrow').textContent = 'Welcome, ' + state.user.name;
+  document.getElementById('hub-name').textContent = state.user.name;
+  goTo('onboard-phone');
+} else {
+  goTo('onboard-name');
+}
 </script>
 </body>
 </html>
