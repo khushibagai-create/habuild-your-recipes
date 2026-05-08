@@ -30,7 +30,7 @@
     --muted-2:#A8A294;
     --line:#EFEAE0;
     --line-soft:#F4F0E5;
-    --tab-h:78px;
+    --tab-h:62px;
     --cta-h:96px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -115,8 +115,9 @@
     background:rgba(255,255,255,.97);
     backdrop-filter:blur(10px);
     border-top:1px solid var(--line);
-    display:flex;align-items:center;justify-content:space-around;
-    padding:0 18px 18px;
+    display:flex;align-items:center;justify-content:center;
+    gap:64px;
+    padding:6px 18px 8px;
   }
   .bottom-cta{
     bottom:0;
@@ -127,10 +128,12 @@
     display:flex;gap:10px;
   }
   .tab{
-    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    flex:0 0 auto;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
     color:var(--muted-2);font-size:10.5px;font-weight:500;cursor:pointer;
+    min-width:64px;
   }
-  .tab svg{width:20px;height:20px;}
+  .tab svg{width:18px;height:18px;}
   .tab.active{color:var(--forest);}
   .tab.active svg{color:var(--forest);}
 
@@ -1076,7 +1079,7 @@
   /* Tab bar / bottom CTA — respect iPhone home indicator */
   .tab-bar{
     height:calc(var(--tab-h) + env(safe-area-inset-bottom));
-    padding:0 18px max(18px, env(safe-area-inset-bottom));
+    padding:6px 18px max(8px, env(safe-area-inset-bottom));
   }
   .bottom-cta{
     padding-bottom:max(20px, env(safe-area-inset-bottom));
