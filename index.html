@@ -379,26 +379,22 @@
     line-height:1.25;letter-spacing:-.1px;
   }
 
-  /* See all recipes button under this-week row */
+  /* See all recipes — full-width button styled like today-card open CTA */
   .see-all-wrap{
     margin:14px 22px 4px;
-    display:flex;justify-content:center;
   }
   .see-all-btn{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:11px 22px;
+    width:100%;
+    height:48px;
+    display:flex;align-items:center;justify-content:center;gap:8px;
     background:var(--forest);color:#fff;
-    border:none;border-radius:999px;
-    font-family:'Inter';font-weight:600;font-size:13.5px;
+    border:none;border-radius:14px;
+    font-family:'Inter';font-weight:600;font-size:14px;
     cursor:pointer;
-    box-shadow:0 4px 14px rgba(45,80,22,.18);
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:transform .15s ease;
   }
-  .see-all-btn:hover{
-    box-shadow:0 6px 18px rgba(45,80,22,.22);
-  }
-  .see-all-btn:active{transform:scale(.97);}
-  .see-all-btn svg{width:14px;height:14px;}
+  .see-all-btn:active{transform:scale(.98);}
+  .see-all-btn svg{width:16px;height:16px;}
 
   .month-tile{
     margin:18px 22px 24px;
