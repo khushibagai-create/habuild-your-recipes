@@ -1127,6 +1127,28 @@
     padding-top:max(40px, calc(env(safe-area-inset-top) + 24px));
     padding-bottom:max(32px, env(safe-area-inset-bottom));
   }
+
+  /* Mobile-only: compress onboarding so the CTA never gets clipped by Safari URL bar */
+  @media (max-width:479px){
+    .onboard{
+      padding:max(16px, env(safe-area-inset-top)) 22px max(20px, env(safe-area-inset-bottom)) !important;
+    }
+    .ob-eyebrow{margin-top:18px;}
+    .ob-title{font-size:28px;}
+    .ob-sub{margin-top:10px;font-size:14px;}
+    .ob-illu{
+      width:120px;height:120px;
+      margin:16px auto 6px;
+      font-size:50px;
+    }
+    .ob-input-group{margin-top:12px;}
+    .ob-input{height:50px;}
+    .ob-prefix{height:50px;}
+    .ob-spacer{height:12px !important;flex:0 0 12px !important;}
+    .ob-cta{height:50px;}
+    .ob-progress{margin-top:10px;}
+    .ob-skip{margin-top:8px;}
+  }
   .reflect{
     padding-top:max(20px, env(safe-area-inset-top));
     padding-bottom:max(30px, env(safe-area-inset-bottom));
