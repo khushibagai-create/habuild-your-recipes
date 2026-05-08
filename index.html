@@ -1028,6 +1028,8 @@
     max-width:430px;
     margin:0 auto;
     flex:1;
+    min-height:100vh;
+    min-height:100dvh;
   }
   .phone{
     width:100%;
@@ -1039,6 +1041,25 @@
     box-shadow:none !important;
     overflow:hidden;
     position:relative;
+  }
+  /* Ensure stage and body match visible viewport too — no gap below phone */
+  html, body{
+    height:100%;
+  }
+  .stage{
+    min-height:100vh;
+    min-height:100dvh;
+  }
+  /* On mobile, pin bottom-cta to the actual viewport bottom (not phone bottom)
+     so iOS URL bar changes never leave a gap underneath */
+  @media (max-width:479px){
+    .bottom-cta{
+      position:fixed !important;
+      bottom:0 !important;
+      left:0;right:0;
+      max-width:430px;
+      margin:0 auto;
+    }
   }
 
   /* Tablet/desktop — show as centered app card with breathing room */
