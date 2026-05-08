@@ -6,6 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="theme-color" content="#F5F0E8"/>
+
+<!-- Mixpanel (loaded async; init only if token is set) -->
+<script>(function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");for(h=0;h<i.length;h++)g(a,i[h]);var j="set set_once union unset remove delete".split(" ");a.get_group=function(){function b(c){d[c]=function(){call2_args=arguments;call2=[c].concat(Array.prototype.slice.call(call2_args,0));a.push([e,call2])}}for(var d={},e=["get_group"].concat(Array.prototype.slice.call(arguments,0)),c=0;c<j.length;c++)b(j[c]);return d};b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);</script>
 <title>Habuild — Your Recipes (v4, Feb 2026)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1346,7 +1349,7 @@
             <div class="locker-sub">18 recipes this month · Filter or search to find one</div>
           </div>
 
-          <div class="voice-search" onclick="showToast('Voice search coming soon')">
+          <div class="voice-search" onclick="track('Voice Search Tapped'); showToast('Voice search coming soon')">
             <div class="mic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0M12 18v3M9 21h6" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>
             <div class="text"><b>Search by voice</b> <span style="opacity:.6;">· coming soon</span></div>
           </div>
@@ -1573,7 +1576,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
           Share
         </button>
-        <button class="btn btn-primary" id="cooked-cta" onclick="goTo('reflect')">
+        <button class="btn btn-primary" id="cooked-cta" onclick="onCookedIt()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg>
           <span id="cooked-cta-text">Cooked it</span>
         </button>
@@ -1598,6 +1601,51 @@
 </div>
 
 <script>
+// =====================================================================
+// ANALYTICS — Mixpanel (no-op if token unset)
+// =====================================================================
+// 👇 Drop your Mixpanel project token here. While it's empty, all track()
+// calls are silent no-ops, so the app works fine in dev / pre-launch.
+const MIXPANEL_TOKEN = '81929a7952506e86cd230338890d3298';
+
+const ANALYTICS_DEBUG = false; // flip to true to log events to console
+
+(function initAnalytics(){
+  if (!MIXPANEL_TOKEN || !window.mixpanel) return;
+  try {
+    mixpanel.init(MIXPANEL_TOKEN, {
+      debug: false,
+      track_pageview: false,
+      persistence: 'localStorage',
+      ignore_dnt: false
+    });
+  } catch(e) {}
+})();
+
+function track(eventName, props){
+  props = props || {};
+  if (ANALYTICS_DEBUG) console.log('[track]', eventName, props);
+  if (MIXPANEL_TOKEN && window.mixpanel && typeof mixpanel.track === 'function') {
+    try { mixpanel.track(eventName, props); } catch(e){}
+  }
+}
+
+function identifyUser(phone, name){
+  if (!MIXPANEL_TOKEN || !window.mixpanel) return;
+  try {
+    if (phone) mixpanel.identify(phone);
+    const peopleProps = {};
+    if (name) peopleProps['$name'] = name;
+    if (phone) peopleProps['$phone'] = phone;
+    if (Object.keys(peopleProps).length) mixpanel.people.set(peopleProps);
+  } catch(e){}
+}
+
+function setSuperProps(obj){
+  if (!MIXPANEL_TOKEN || !window.mixpanel) return;
+  try { mixpanel.register(obj); } catch(e){}
+}
+
 // =====================================================================
 // RECIPE DATABASE — Feb 2026 micro-habits (18 recipes)
 // =====================================================================
@@ -2346,6 +2394,9 @@ function goTo(id) {
   // Reset scroll
   const screen = document.getElementById(id);
   if (screen) screen.scrollTop = 0;
+
+  // Analytics — every screen view
+  track('Screen Viewed', { screen: id });
 }
 
 // =====================================================================
@@ -2383,13 +2434,19 @@ function submitName() {
   saveUser();
   document.getElementById('ob-greet-eyebrow').textContent = 'Welcome, ' + v;
   document.getElementById('hub-name').textContent = v;
+  setSuperProps({ user_name: v });
+  track('Onboarding Name Submitted', { name_length: v.length });
   goTo('onboard-phone');
 }
 
 function submitPhone() {
   if (phoneInput.value.length !== 10) return;
+  const phoneE164 = '+91' + phoneInput.value;
   state.user.phone = '+91 ' + phoneInput.value;
   saveUser();
+  identifyUser(phoneE164, state.user.name);
+  track('Onboarding Phone Submitted');
+  track('Onboarding Completed');
   goTo('home');
 }
 
@@ -2408,6 +2465,16 @@ function openRecipe(id) {
   if (!r) return;
   state.currentRecipeId = id;
   state.yieldMult = 1;
+
+  track('Recipe Opened', {
+    recipe_id: r.id,
+    recipe_name: r.name,
+    recipe_type: r.type,
+    week: r.week,
+    week_title: r.weekTitle,
+    day: r.day,
+    is_today: id === 'tulsi-ginger'
+  });
 
   const img = document.getElementById('d-image');
   img.src = r.image;
@@ -2496,6 +2563,13 @@ function setYield(mult) {
   const r = RECIPES[state.currentRecipeId];
   if (!r) return;
 
+  track('Yield Changed', {
+    recipe_id: r.id,
+    recipe_name: r.name,
+    multiplier: mult,
+    family_mode: mult >= 4
+  });
+
   r.ingredients.forEach((ing, idx) => {
     const el = document.getElementById('ing-' + idx);
     if (!el) return;
@@ -2561,6 +2635,25 @@ function resetReview() {
 function selectThumb(which) {
   document.getElementById('rv-loved').classList.toggle('selected', which === 'loved');
   document.getElementById('rv-not-for-me').classList.toggle('selected', which === 'not');
+  const r = RECIPES[state.currentRecipeId];
+  track('Review Thumb Selected', {
+    recipe_id: r ? r.id : null,
+    thumb: which === 'loved' ? 'loved' : 'not_for_me'
+  });
+}
+
+function onCookedIt(){
+  const r = RECIPES[state.currentRecipeId];
+  if (r) {
+    track('Cooked It Tapped', {
+      recipe_id: r.id,
+      recipe_name: r.name,
+      recipe_type: r.type,
+      yield_multiplier: state.yieldMult,
+      family_mode: state.yieldMult >= 4
+    });
+  }
+  goTo('reflect');
 }
 
 function submitReview() {
@@ -2570,6 +2663,16 @@ function submitReview() {
     showToast('Tap Loved it or Not for me first');
     return;
   }
+  const r = RECIPES[state.currentRecipeId];
+  const note = (document.getElementById('rv-text').value || '').trim();
+  track('Recipe Reviewed', {
+    recipe_id: r ? r.id : null,
+    recipe_name: r ? r.name : null,
+    sentiment: lovedSelected ? 'loved' : 'not_for_me',
+    has_note: note.length > 0,
+    note_length: note.length,
+    yield_multiplier: state.yieldMult
+  });
   document.getElementById('rv-submit').style.display = 'none';
   document.getElementById('rv-submitted').style.display = 'flex';
   showToast('Thanks for your review');
@@ -2651,6 +2754,7 @@ function setupFilterChips() {
         if (show) visible++;
       });
       filterContext.innerHTML = `<b>${visible} recipe${visible !== 1 ? 's' : ''}</b> · ${filterLabels[f] || f}`;
+      track('Filter Applied', { filter: f, visible_count: visible });
     });
   });
 }
@@ -2700,7 +2804,13 @@ function renderCalendar() {
 
     card.innerHTML = html;
     card.querySelector('.wk-header').addEventListener('click', () => {
+      const wasCollapsed = card.classList.contains('collapsed');
       card.classList.toggle('collapsed');
+      track('Calendar Week Toggled', {
+        week: wk.n,
+        week_title: wk.title,
+        action: wasCollapsed ? 'expand' : 'collapse'
+      });
     });
     root.appendChild(card);
   });
@@ -2713,11 +2823,15 @@ function toggleHeart(e, el) {
   e.stopPropagation();
   el.classList.toggle('saved');
   const svg = el.querySelector('svg');
+  const card = el.closest('.card');
+  const recipeId = card ? card.dataset.recipeId : null;
   if (el.classList.contains('saved')) {
     svg.setAttribute('fill', 'currentColor');
     showToast('Saved to Your Recipes');
+    track('Recipe Saved', { recipe_id: recipeId, source: 'heart_icon' });
   } else {
     svg.setAttribute('fill', 'none');
+    track('Recipe Unsaved', { recipe_id: recipeId });
   }
 }
 
@@ -2736,6 +2850,12 @@ function showToast(msg) {
 async function shareRecipe() {
   const r = RECIPES[state.currentRecipeId];
   if (!r) return;
+
+  track('Share Initiated', {
+    recipe_id: r.id,
+    recipe_name: r.name,
+    recipe_type: r.type
+  });
 
   const appUrl = 'https://khushibagai-create.github.io/habuild-your-recipes/';
   const text = `I made ${r.name} today — Day ${r.day} of Habuild's February ${r.weekTitle} micro-habit. ${r.benefits[0]}.`;
@@ -2816,6 +2936,20 @@ renderThisWeekRow();
 // Pre-fill detail with today's recipe so direct nav to detail still works
 openRecipe('tulsi-ginger');
 
+// Re-identify returning user with Mixpanel
+if (state.user.phone || state.user.name) {
+  const phoneE164 = state.user.phone ? state.user.phone.replace(/\s/g, '') : '';
+  identifyUser(phoneE164, state.user.name);
+  if (state.user.name) setSuperProps({ user_name: state.user.name });
+}
+
+// App-level open event
+track('App Opened', {
+  is_returning: !!(state.user.name && state.user.phone),
+  has_name: !!state.user.name,
+  has_phone: !!state.user.phone
+});
+
 // Returning user — skip onboarding, go straight to Home with greeting populated
 if (state.user.name && state.user.phone) {
   document.getElementById('hub-name').textContent = state.user.name;
@@ -2826,6 +2960,7 @@ if (state.user.name && state.user.phone) {
   document.getElementById('hub-name').textContent = state.user.name;
   goTo('onboard-phone');
 } else {
+  track('Onboarding Started');
   goTo('onboard-name');
 }
 </script>
