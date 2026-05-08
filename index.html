@@ -1014,7 +1014,12 @@
     min-height:100vh;
   }
   /* Hide prototype chrome only — scoped so it doesn't kill .wk-header .meta in calendar */
-  .stage > .meta, .notch, .status-bar, .nav { display:none !important; }
+  .stage > .meta, .notch, .status-bar, .nav, .tab-bar { display:none !important; }
+
+  /* Without tab bar, screens don't need bottom space reserved for it */
+  .home-pad, .cal-pad{
+    padding-bottom:max(24px, env(safe-area-inset-bottom)) !important;
+  }
 
   /* Phone wrapper becomes the responsive app frame */
   .phone-wrap{
