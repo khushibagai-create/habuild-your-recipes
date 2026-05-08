@@ -379,6 +379,27 @@
     line-height:1.25;letter-spacing:-.1px;
   }
 
+  /* See all recipes button under this-week row */
+  .see-all-wrap{
+    margin:14px 22px 4px;
+    display:flex;justify-content:center;
+  }
+  .see-all-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:11px 22px;
+    background:var(--forest);color:#fff;
+    border:none;border-radius:999px;
+    font-family:'Inter';font-weight:600;font-size:13.5px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(45,80,22,.18);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .see-all-btn:hover{
+    box-shadow:0 6px 18px rgba(45,80,22,.22);
+  }
+  .see-all-btn:active{transform:scale(.97);}
+  .see-all-btn svg{width:14px;height:14px;}
+
   .month-tile{
     margin:18px 22px 24px;
     background:linear-gradient(135deg, var(--sage-tint) 0%, var(--cream) 100%);
@@ -1274,11 +1295,17 @@
 
           <div class="section-head">
             <h3>This week's recipes</h3>
-            <a onclick="goTo('recipes')">All recipes →</a>
           </div>
 
           <div class="week-row" id="this-week-row">
             <!-- Mini cards rendered dynamically from RECIPES (so images stay in sync with IMG fallbacks) -->
+          </div>
+
+          <div class="see-all-wrap">
+            <button class="see-all-btn" onclick="goTo('recipes')">
+              See all recipes
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </button>
           </div>
 
           <div class="month-tile" onclick="goTo('calendar')">
