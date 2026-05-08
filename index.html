@@ -1643,7 +1643,7 @@
 // calls are silent no-ops, so the app works fine in dev / pre-launch.
 const MIXPANEL_TOKEN = '81929a7952506e86cd230338890d3298';
 
-const ANALYTICS_DEBUG = false; // flip to true to log events to console
+const ANALYTICS_DEBUG = true; // flip to true to log events to console (debug helper for v8)
 
 (function initAnalytics(){
   if (!MIXPANEL_TOKEN || !window.mixpanel) return;
@@ -2671,13 +2671,23 @@ function resetReview() {
   if (lovedBtn) lovedBtn.classList.remove('selected');
   if (notForMeBtn) notForMeBtn.classList.remove('selected');
   if (textarea) textarea.value = '';
-  if (submitBtn) submitBtn.style.display = '';
+  if (submitBtn) {
+    submitBtn.style.display = '';
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.5';
+  }
   if (submitted) submitted.style.display = 'none';
 }
 
 function selectThumb(which) {
   document.getElementById('rv-loved').classList.toggle('selected', which === 'loved');
   document.getElementById('rv-not-for-me').classList.toggle('selected', which === 'not');
+  // Enable submit button now that a thumb is picked
+  const submitBtn = document.getElementById('rv-submit');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '1';
+  }
   const r = RECIPES[state.currentRecipeId];
   track('Review Thumb Selected', {
     recipe_id: r ? r.id : null,
